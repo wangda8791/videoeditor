@@ -86,20 +86,22 @@ function createProject() {
 		json_encode("{result:'0', msg:'The project is alreay exists'}");
 		exit;
 	}
+
+	$rel = $_SERVER["CONTEXT_DOCUMENT_ROOT"];
 	mkdir("./result/" . $prjname);
 	mkdir("./result/" . $prjname . "/video");
 	mkdir("./result/" . $prjname . "/audio");
 	mkdir("./result/" . $prjname . "/photo");
+	shell_exec("sudo chmod 777 -R \"" . $rel . "/result/" . $prjname . "\"");
 
-	$rel = $_SERVER["CONTEXT_DOCUMENT_ROOT"];
 	$outdir = $rel . "/result/" . $prjname . "/video";
-	vsplit($video, $vdur, $outdir);
-/*	foreach ($audios as $audio) {
+	foreach ($audios as $audio) {
 		shell_exec("cp ./audio/" . $audio . " ./result/" . $prjname . "/audio/" . $audio);
 	}
 	foreach ($photos as $photo) {
 		shell_exec("cp ./photo/" . $audio . " ./result/" . $prjname . "/photo/" . $photo);
-	}*/
+	}
+	vsplit($video, $vdur, $outdir);
 	return $prjname;
 }
 
@@ -108,7 +110,7 @@ function vsplit($video, $vdur, $outdir) {
 	$filename = substr($video, 0, strrpos($video, "."));
 	$ext = substr($video, strrpos($video, ".") + 1);
 	$out_name = $filename . "-%05d." . $ext;
-	shell_exec("sudo sh \"" . $rel . "/bin/ffsplit.sh\" \"" . $rel . "/video/" . $video . "\" " . $vdur . " \"" . $outdir . "/" . $out_name . "\"");
+	shell_exec("sudo \"" . $rel . "/bin/ffsplit.sh\" \"" . $rel . "/video/" . $video . "\" " . $vdur . " \"" . $outdir . "/" . $out_name . "\"");
 }
 
 ?>
