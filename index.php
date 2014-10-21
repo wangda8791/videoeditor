@@ -80,7 +80,7 @@
         </thead>
         <tbody>
           <tr ng-repeat="project in projects">
-          	<td><a href="javascript:0"/>{{ project.name }}</a></td>
+          	<td><a href="./project.php?name={{ project.name }}"/>{{ project.name }}</a></td>
           	<td>{{ project.nof }}</td>
           	<td><button class="btn btn-default">Delete</button></td>
           </tr>

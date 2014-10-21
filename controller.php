@@ -3,7 +3,7 @@
 
 	switch($command){
 		case "list":
-			echo json_encode(resources());
+			echo json_encode(resources("."));
 			break;
 		case "upload":
 			upload($_FILES);
@@ -12,7 +12,12 @@
 			echo json_encode(project());
 			break;
 		case "createprj":
-			createProject();
+			$prjname = createProject();
+			header("location:" . "./project.php?name=" . $prjname);
+			break;
+		case "workspace":
+			$prjname = $_REQUEST["name"];
+			echo json_encode(resources("./result/" . $prjname));
 			break;
 	}
 
@@ -27,11 +32,11 @@ function upload($files) {
 	}
 }
 
-function resources() {
+function resources($path) {
 
-	return array("videos"=>resource_path("./video"), 
-		"audios"=>resource_path("./audio"),
-		"photos"=>resource_path("./photo"));
+	return array("videos"=>resource_path($path . "/video"), 
+		"audios"=>resource_path($path . "/audio"),
+		"photos"=>resource_path($path . "/photo"));
 }
 
 function resource_path($path) {
@@ -82,10 +87,21 @@ function createProject() {
 		exit;
 	}
 	mkdir("./result/" . $prjname);
+	mkdir("./result/" . $prjname . "/video");
+	mkdir("./result/" . $prjname . "/audio");
+	mkdir("./result/" . $prjname . "/photo");
+/*	vsplit($video, $vdur);
+	foreach ($audios as $audio) {
+		shell_exec("cp ./audio/" . $audio . " ./result/" . $prjname . "/audio/" . $audio);
+	}
+	foreach ($photos as $photo) {
+		shell_exec("cp ./photo/" . $audio . " ./result/" . $prjname . "/photo/" . $photo);
+	}*/
+	return $prjname;
 }
 
 function vsplit($video, $vdur) {
-
+	shell_exec("sudo ./bin/ffsplit.h ./video/" . $video . " " . $vdur);
 }
 
 ?>
