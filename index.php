@@ -8,7 +8,7 @@
 
 <body>
 
-<form class="row" ng-app="" ng-controller="controller" name="projectForm" action="controller.php?cmd=createprj" method="post">
+<form class="row form-horizontal" ng-app="" ng-controller="controller" name="projectForm" action="controller.php?cmd=createprj" method="post">
   <div class="pull-left col-md-6">
     <div class="container col-md-12">
       <h3>Videos</h3>

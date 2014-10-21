@@ -8,20 +8,31 @@
 
 <body>
 <center><h1>Workspace (<?php echo $_REQUEST["name"]; ?>)</h1></center>
-<div class="row" ng-app="" ng-controller="controller">
+<div class="row container col-md-9" ng-app="" ng-controller="controller">
   <div class="container col-md-12">
     <h3>Video Clip</h3>
-    <button class="btn btn-success col-md-2" ng-repeat="video in resource.videos" onclick="select('video', '{{ video.name }}');">{{ video.name }}</button>
+	<div ng-repeat="video in resource.videos" class="col-md-2">
+      <button class="btn btn-success col-md-12" onclick="select('video', '{{ video.name }}');">{{ video.name }}</button>
+	</div>
   </div>
   <div class="container col-md-12">
     <h3>Audio</h3>
-    <button class="btn btn-info col-md-2" ng-repeat="audio in resource.audios" onclick="select('audio', '{{ audio.name }}');">{{ audio.name }}</button>
+	<div ng-repeat="audio in resource.audios" class="col-md-2">
+	  <button class="btn btn-info col-md-12" onclick="select('audio', '{{ audio.name }}');">{{ audio.name }}</button>
+	</div>
   </div>
   <div class="container col-md-12">
     <h3>Photo</h3>
-    <button class="btn btn-warning col-md-2" ng-repeat="photo in resource.photos" onclick="select('photo', '{{ photo.name }}');">{{ photo.name }}</button>
+	<div ng-repeat="photo in resource.photos" class="col-md-2">
+      <button class="btn btn-warning col-md-12" onclick="select('photo', '{{ photo.name }}');">{{ photo.name }}</button>
+	 </div>
   </div>
   <hr/>
+</div>
+<div class="row container col-md-3">
+  <div class="container col-md-12">
+    <h3>Resource</h3>
+  </div>
 </div>
 
 <script>

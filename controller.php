@@ -90,8 +90,11 @@ function createProject() {
 	mkdir("./result/" . $prjname . "/video");
 	mkdir("./result/" . $prjname . "/audio");
 	mkdir("./result/" . $prjname . "/photo");
-/*	vsplit($video, $vdur);
-	foreach ($audios as $audio) {
+
+	$rel = $_SERVER["CONTEXT_DOCUMENT_ROOT"];
+	$outdir = $rel . "/result/" . $prjname . "/video";
+	vsplit($video, $vdur, $outdir);
+/*	foreach ($audios as $audio) {
 		shell_exec("cp ./audio/" . $audio . " ./result/" . $prjname . "/audio/" . $audio);
 	}
 	foreach ($photos as $photo) {
@@ -100,8 +103,12 @@ function createProject() {
 	return $prjname;
 }
 
-function vsplit($video, $vdur) {
-	shell_exec("sudo ./bin/ffsplit.h ./video/" . $video . " " . $vdur);
+function vsplit($video, $vdur, $outdir) {
+	$rel = $_SERVER["CONTEXT_DOCUMENT_ROOT"];
+	$filename = substr($video, 0, strrpos($video, "."));
+	$ext = substr($video, strrpos($video, ".") + 1);
+	$out_name = $filename . "-%05d." . $ext;
+	shell_exec("sudo sh \"" . $rel . "/bin/ffsplit.sh\" \"" . $rel . "/video/" . $video . "\" " . $vdur . " \"" . $outdir . "/" . $out_name . "\"");
 }
 
 ?>
