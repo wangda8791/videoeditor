@@ -64,19 +64,11 @@
           <th></th>
         </thead>
         <tbody>
-<<<<<<< HEAD
           <tr ng-repeat="image in resource.images">
-          	<td><input name="image[]" type="checkbox" value="{{ image.name }}"/></td>
-          	<td><a target="__new" href="{{ image.url }}"/>{{ image.name }}</a></td>
-          	<td>{{ image.size }}</td>
-          	<td><button class="btn btn-default">Delete</button></td>
-=======
-          <tr ng-repeat="photo in resource.photos">
-            <td><input name="photo[]" type="checkbox" value="{{ photo.name }}"/></td>
-            <td><a target="__new" href="{{ photo.url }}"/>{{ photo.name }}</a></td>
-            <td>{{ photo.size }}</td>
-            <td><a href="controller.php?cmd=deleteresource&type=photo&name={{ photo.name }}" class="btn btn-default">Delete</a></td>
->>>>>>> 2a7487a72318d1bd7a70549dc61bfb17ed94c704
+            <td><input name="image[]" type="checkbox" value="{{ image.name }}"/></td>
+            <td><a target="__new" href="{{ image.url }}"/>{{ image.name }}</a></td>
+            <td>{{ image.size }}</td>
+            <td><a href="controller.php?cmd=deleteresource&type=image&name={{ image.name }}" class="btn btn-default">Delete</a></td>
           </tr>
         </tbody>
       </table>
@@ -89,7 +81,7 @@
       <table class="table table-striped">
         <thead>
           <th>Name</th>
-          <th>Video/Audio/Photo</th>
+          <th>Video/Audio/image</th>
           <th></th>
         </thead>
         <tbody>
