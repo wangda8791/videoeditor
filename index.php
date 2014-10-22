@@ -29,8 +29,8 @@
           <tr ng-repeat="video in resource.videos | orderBy: 'ctime': true">
             <td><input name="video" type="radio" value="{{ video.name }}"/></td>
             <td><a target="__new" href="{{ video.url }}"/>{{ video.name }}</a></td>
-	        <td>{{ video.size }}</td>
-	        <td><a href="controller.php?cmd=deleteresource&type=video&name={{ video.name }}" class="btn btn-default">Delete</a></td>
+	    <td>{{ video.size }}</td>
+	    <td><a href="controller.php?cmd=deleteresource&type=video&name={{ video.name }}" class="btn btn-default">Delete</a></td>
           </tr>
         </tbody>
       </table>

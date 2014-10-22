@@ -8,42 +8,71 @@
 
 <body>
 <center><h1>Workspace (<?php echo $_REQUEST["name"]; ?>)</h1></center>
-<div class="row container col-md-9" ng-app="" ng-controller="controller">
+<div ng-app="" ng-controller="controller">
+<div class="row container col-md-9">
   <div class="container col-md-12">
     <h3>Video Clip</h3>
       <div ng-repeat="video in resource.videos" class="col-md-2">
-        <button class="btn btn-success col-md-12" ng-click="select('video', '{{ video.name }}');">{{ video.name }}</button>
+        <button class="btn btn-success col-md-12" ng-click="select('video', video.name);">{{ video.name }}</button>
       </div>
   </div>
   <div class="container col-md-12">
     <h3>Audio</h3>
       <div ng-repeat="audio in resource.audios" class="col-md-2">
-        <button class="btn btn-info col-md-12" onclick="select('audio', '{{ audio.name }}');">{{ audio.name }}</button>
+        <button class="btn btn-info col-md-12" ng-click="select('audio', audio.name);">{{ audio.name }}</button>
       </div>
   </div>
   <div class="container col-md-12">
     <h3>Image</h3>
       <div ng-repeat="image in resource.images" class="col-md-2">
-        <button class="btn btn-warning col-md-12" onclick="select('image', '{{ image.name }}');">{{ image.name }}</button>
+        <button class="btn btn-warning col-md-12" ng-click="select('image', image.name);">{{ image.name }}</button>
       </div>
   </div>
-  <hr/>
 </div>
 <div class="row container col-md-3">
   <div class="container col-md-12">
-    <h3>Resource</h3>
+    <h3>
+      Resource
+      <button class="btn btn-danger pull-right" ng-click="generate();">Generate</button>
+    </h3>
+    <div id="resource_panel"></div>
   </div>
+</div>
 </div>
 
 <script>
+
 function controller($scope,$http) {
   $http.get("./controller.php?cmd=workspace&name=<?php echo $_REQUEST['name']; ?>")
   .success(function(response) {$scope.resource = response;});
-}
+  
+  $scope.workspace = {profile:[]};
+  $scope.selected = -1;
 
-function select($type, $name) {
-	alert($type + "," + $name);
-	return false;
+  $scope.select = function($type, $name) {
+    var json_resource = {'type':$type, 'name':$name};
+    var dom_resource = '';
+    if ($type == 'video')
+      dom_resource = '<button class="btn btn-success col-md-12">' + $name + '</button>';
+    if ($type == 'audio')
+      dom_resource = '<button class="btn btn-info col-md-12">' + $name + '</button>';
+    if ($type == 'image')
+      dom_resource = '<button class="btn btn-warning col-md-12">' + $name + '</button>';
+    
+    if ($scope.selected == -1) {
+      $scope.workspace.profile.push(json_resource);
+      document.getElementById("resource_panel").innerHTML += dom_resource;
+    } else {
+      workspace.profile.insert(selected, json_resource);
+      dom_resource.insertAfter($("#resource_panel").find('button:nth(' + selected + ')'));
+    }
+     
+    return false;
+  }
+
+  $scope.generate = function() {
+    alert($scope.workspace.profile);
+  }
 }
 </script>
 
