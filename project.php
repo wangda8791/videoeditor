@@ -22,9 +22,9 @@
 	</div>
   </div>
   <div class="container col-md-12">
-    <h3>Photo</h3>
-	<div ng-repeat="photo in resource.photos" class="col-md-2">
-      <button class="btn btn-warning col-md-12" onclick="select('photo', '{{ photo.name }}');">{{ photo.name }}</button>
+    <h3>image</h3>
+	<div ng-repeat="image in resource.images" class="col-md-2">
+      <button class="btn btn-warning col-md-12" onclick="select('image', '{{ image.name }}');">{{ image.name }}</button>
 	 </div>
   </div>
   <hr/>

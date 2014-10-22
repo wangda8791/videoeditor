@@ -3,6 +3,9 @@
 
 <head>
 <link rel="stylesheet" href = "http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="http://bootstrapdocs.com/v3.2.0/docs/dist/js/bootstrap.min.js"></script>
+
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"></script>
 </head>
 
@@ -11,7 +14,10 @@
 <form class="row form-horizontal" ng-app="" ng-controller="controller" name="projectForm" action="controller.php?cmd=createprj" method="post">
   <div class="pull-left col-md-6">
     <div class="container col-md-12">
-      <h3>Videos</h3>
+      <h3>
+		Videos
+		<a class="btn btn-primary btn-lg pull-right" data-toggle="modal" data-target="#uploadDlg">Upload Files...</a>
+	  </h3>
       <table class="table table-striped">
         <thead>
           <th></th>
@@ -49,7 +55,7 @@
       </table>
     </div>
     <div class="container col-md-12">
-      <h3>Photo</h3>
+      <h3>image</h3>
       <table class="table table-striped">
         <thead>
           <th></th>
@@ -58,10 +64,10 @@
           <th></th>
         </thead>
         <tbody>
-          <tr ng-repeat="photo in resource.photos">
-          	<td><input name="photo[]" type="checkbox" value="{{ photo.name }}"/></td>
-          	<td><a target="__new" href="{{ photo.url }}"/>{{ photo.name }}</a></td>
-          	<td>{{ photo.size }}</td>
+          <tr ng-repeat="image in resource.images">
+          	<td><input name="image[]" type="checkbox" value="{{ image.name }}"/></td>
+          	<td><a target="__new" href="{{ image.url }}"/>{{ image.name }}</a></td>
+          	<td>{{ image.size }}</td>
           	<td><button class="btn btn-default">Delete</button></td>
           </tr>
         </tbody>
@@ -108,6 +114,46 @@
   </div>
 </form>
 
+<form class="row form-horizontal" name="uploadForm" enctype="multipart/form-data" action="controller.php?cmd=upload" method="post">
+	<div class="modal fade" id="uploadDlg" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+			<h4 class="modal-title" id="myModalLabel">Add Files...</h4>
+		  </div>
+		  <div class="modal-body" id="filegrp">
+			<div class="row">
+			  <div class="col-md-8"><input type="file" name="resource[]"/></div>
+			  <div class="col-md-4"><a class="btn btn-sm btn-default" onclick="$(this).parent().parent().remove();">Delete</a></div>
+			</div>
+			<div class="row">
+			  <div class="col-md-8"><input type="file" name="resource[]"/></div>
+			  <div class="col-md-4"><a class="btn btn-sm btn-default" onclick="$(this).parent().parent().remove();">Delete</a></div>
+			</div>
+			<div class="row">
+			  <div class="col-md-8"><input type="file" name="resource[]"/></div>
+			  <div class="col-md-4"><a class="btn btn-sm btn-default" onclick="$(this).parent().parent().remove();">Delete</a></div>
+			</div>
+			<div class="row">
+			  <div class="col-md-8"><input type="file" name="resource[]"/></div>
+			  <div class="col-md-4"><a class="btn btn-sm btn-default" onclick="$(this).parent().parent().remove();">Delete</a></div>
+			</div>
+			<div class="row">
+			  <div class="col-md-8"><input type="file" name="resource[]"/></div>
+			  <div class="col-md-4"><a class="btn btn-sm btn-default" onclick="$(this).parent().parent().remove();">Delete</a></div>
+			</div>
+		  </div>
+		  <div class="modal-footer">
+		    <button type="button" class="btn btn-warning pull-left" onclick="addFile();">Add File</button>
+			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			<button type="submit" class="btn btn-primary">Upload</button>
+		  </div>
+		</div>
+	  </div>
+	</div>
+</form>
+
 <script>
 function controller($scope,$http) {
   $http.get("./controller.php?cmd=list")
@@ -116,7 +162,12 @@ function controller($scope,$http) {
   $http.get("./controller.php?cmd=project")
   .success(function(response) {$scope.projects = response;});
 }
-
+function addFile() {
+	$('<div class="row">' + 
+	  '<div class="col-md-8"><input type="file" name="resource[]"/></div>' +
+	  '<div class="col-md-4"><a class="btn btn-sm btn-default" onclick="$(this).parent().parent().remove();">Delete</a></div>' +
+	  '</div>').appendTo($("#filegrp"));
+}
 </script>
 
 </body>
