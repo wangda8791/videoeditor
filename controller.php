@@ -47,7 +47,13 @@
 	}
 
 function generate($prjname, $gendata) {
-	var_dump($data);
+	$command = "./bin/ffmpeg -y";
+	foreach ($gendata->profile as $file) {
+		$command .= " -i \"./result/" . $prjname . "/" . $file->type . "/" . $file->name . "\"";
+	}
+	$command .= " -vcodec h264 -pix_fmt yuv420p -s 640*480 -acodec aac -strict experimental \"./result/" . $prjname . ".mp4\"";
+	file_put_contents("./result/" . $prjname . ".cmd", $command);
+	shell_exec($command);
 }
 
 function upload($files) {
@@ -174,7 +180,7 @@ function vsplit($video, $vdur, $outdir) {
 	$filename = substr($video, 0, strrpos($video, "."));
 	$ext = substr($video, strrpos($video, ".") + 1);
 	$out_name = $filename . "-%05d." . $ext;
-	shell_exec("\"" . $rel . "/bin/ffsplit.sh\" \"" . $rel . "/video/" . $video . "\" " . $vdur . " \"" . $outdir . "/" . $out_name . "\"");
+	shell_exec("\"./bin/ffsplit.sh\" \"" . $rel . "/video/" . $video . "\" " . $vdur . " \"" . $outdir . "/" . $out_name . "\"");
 }
 
 ?>

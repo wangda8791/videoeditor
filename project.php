@@ -71,12 +71,12 @@ function controller($scope,$http) {
   }
 
   $scope.generate = function() {
-    var res = $http.post('./controller.php?cmd=generate&prjname=<?php echo $_REQUEST['name']; ?>', $scope.workspace.profile);
+    var res = $http.post('./controller.php?cmd=generate&prjname=<?php echo $_REQUEST['name']; ?>', $scope.workspace);
     res.success(function(data, status, headers, config) {
 			alert(data);
       		  $scope.message = data;
 		});
-		res.error(function(data, status, headers, config) {i
+		res.error(function(data, status, headers, config) {
 		  alert( "failure message: " + JSON.stringify({data: data}));
 		});
   }
@@ -102,7 +102,7 @@ function controller($scope,$http) {
 
 function loadproject($scope, $http) {
   $http.get("./controller.php?cmd=loadproject&name=<?php echo $_REQUEST['name']; ?>")
-  .success(function(response) { $scope.fillresourcepanel(response);});
+  .success(function(response) { $scope.workspace = response; $scope.fillresourcepanel(response.profile);});
 }
 
 </script>
