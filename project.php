@@ -71,9 +71,40 @@ function controller($scope,$http) {
   }
 
   $scope.generate = function() {
-    alert($scope.workspace.profile);
+    var res = $http.post('./controller.php?cmd=generate&prjname=<?php echo $_REQUEST['name']; ?>', $scope.workspace.profile);
+    res.success(function(data, status, headers, config) {
+			alert(data);
+      		  $scope.message = data;
+		});
+		res.error(function(data, status, headers, config) {i
+		  alert( "failure message: " + JSON.stringify({data: data}));
+		});
   }
+
+  $scope.fillresourcepanel = function(profile) {
+    for (var i=0; i<profile.length; i++) {
+      var dom_resource = '';
+      var $type = profile[i].type;
+      var $name = profile[i].name;
+      if ($type == 'video')
+        dom_resource = '<button class="btn btn-success col-md-12">' + $name + '</button>';
+      if ($type == 'audio')
+        dom_resource = '<button class="btn btn-info col-md-12">' + $name + '</button>';
+      if ($type == 'image')
+        dom_resource = '<button class="btn btn-warning col-md-12">' + $name + '</button>';
+
+      document.getElementById("resource_panel").innerHTML += dom_resource;
+    }
+  }
+
+  loadproject($scope, $http);
 }
+
+function loadproject($scope, $http) {
+  $http.get("./controller.php?cmd=loadproject&name=<?php echo $_REQUEST['name']; ?>")
+  .success(function(response) { $scope.fillresourcepanel(response);});
+}
+
 </script>
 
 </body>

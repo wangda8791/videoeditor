@@ -18,6 +18,12 @@
 		case "project":
 			echo json_encode(project());
 			break;
+		case "loadproject":
+			$prjname = $_REQUEST["name"];
+			$profile = file_get_contents("./result/" . $prjname . "/prj.save");
+			header('Content-type: text/json');
+			echo $profile;
+			break;
 		case "createprj":
 			$prjname = createProject();
 			header("location:" . "./project.php?name=" . $prjname);
@@ -31,7 +37,18 @@
 			$prjname = $_REQUEST["name"];
 			echo json_encode(resources("./result/" . $prjname));
 			break;
+                case "generate":
+			$prjname = $_REQUEST["prjname"];
+			$request_body = file_get_contents('php://input');
+			file_put_contents("./result/" . $prjname . "/prj.save", $request_body);
+			$data = json_decode($request_body);
+			generate($prjname, $data);
+			break;
 	}
+
+function generate($prjname, $gendata) {
+	var_dump($data);
+}
 
 function upload($files) {
 	$names = $files['name'];
