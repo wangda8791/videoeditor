@@ -21,7 +21,7 @@ CHUNK_LEN="$2"
 DURATION_HMS=$(ffmpeg -i "$IN_FILE" 2>&1 | grep Duration | cut -f 4 -d ' ')
 DURATION_H=$(echo "$DURATION_HMS" | cut -d ':' -f 1)
 DURATION_M=$(echo "$DURATION_HMS" | cut -d ':' -f 2 | sed 's/^0\+\([0-9]\)/\1/')
-DURATION_S=$(echo "$DURATION_HMS" | cut -d ':' -f 3 | cut -d '.' -f | sed 's/^0\+\([0-9]\)/\1/')
+DURATION_S=$(echo "$DURATION_HMS" | cut -d ':' -f 3 | cut -d '.' -f 1 | sed 's/^0\+\([0-9]\)/\1/')
 let "DURATION = ( DURATION_H * 60 + DURATION_M ) * 60 + DURATION_S"
  
 if [ "$DURATION" = '0' ] ; then
@@ -50,7 +50,7 @@ let 'N_FILES = DURATION / CHUNK_LEN + 1'
 while [ "$OFFSET" -lt "$DURATION" ] ; do
         OUT_FILE=$(printf "$OUT_FILE_FORMAT" "$N")
         echo "writing $OUT_FILE ($N/$N_FILES)..."
-        ffmpeg -i "$IN_FILE" -vcodec copy -acodec copy -ss "$OFFSET" -t "$CHUNK_LEN" "$OUT_FILE"
+        ffmpeg -y -i "$IN_FILE" -vcodec copy -acodec copy -ss "$OFFSET" -t "$CHUNK_LEN" "$OUT_FILE"
         let "N = N + 1"
         let "OFFSET = OFFSET + CHUNK_LEN"
 done

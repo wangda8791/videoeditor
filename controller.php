@@ -8,12 +8,23 @@
 		case "upload":
 			upload($_FILES);
 			break;
+		case "deleteresource":
+			$type = $_REQUEST["type"];
+			$name = $_REQUEST["name"];
+			deleteResource($type, $name);
+			header("location:" . "./index.php");
+			break;
 		case "project":
 			echo json_encode(project());
 			break;
 		case "createprj":
 			$prjname = createProject();
 			header("location:" . "./project.php?name=" . $prjname);
+			break;
+		case "deleteprj":
+			$prjname = $_REQUEST["name"];
+			deleteProject($prjname);
+			header("location:" . "./index.php");
 			break;
 		case "workspace":
 			$prjname = $_REQUEST["name"];
@@ -58,17 +69,26 @@ function resource_path($path) {
 	return $files;
 }
 
+function deleteResource($type, $name) {
+        $rel = $_SERVER["CONTEXT_DOCUMENT_ROOT"];
+        shell_exec("rm -f \"" . $rel . "/" . $type . "/" . $name . "\"");
+}
+
 function project() {
 	$dir = opendir("./result");
 	while($file = readdir($dir)) {
 		if ($file == "." || $file == ".." || filetype("./result/" . $file) == "file")
 			continue;
 
-		$file_res = opendir("./result/" . $file);
-
+		$vfile = opendir("./result/" . $file . "/video");
+		$afile = opendir("./result/" . $file . "/audio");
+		$pfile = opendir("./result/" . $file . "/photo");
+		
 		$files[] = array(
 			"name"=>$file, 
-			"nof"=>count(readdir($file_res)) - 1 
+			"vfiles"=>count(readdir($vfile)) - 1, 
+			"afiles"=>count(readdir($afile)) - 1, 
+			"pfiles"=>count(readdir($pfile)) - 1
 			);
 	}
 	closedir($dir);
@@ -86,21 +106,29 @@ function createProject() {
 		json_encode("{result:'0', msg:'The project is alreay exists'}");
 		exit;
 	}
-	mkdir("./result/" . $prjname);
-	mkdir("./result/" . $prjname . "/video");
-	mkdir("./result/" . $prjname . "/audio");
-	mkdir("./result/" . $prjname . "/photo");
-
+	
 	$rel = $_SERVER["CONTEXT_DOCUMENT_ROOT"];
+	shell_exec("mkdir \"" . $rel . "/result/" . $prjname . "\"");
+	shell_exec("mkdir \"" . $rel . "/result/" . $prjname . "/video\"");
+	shell_exec("mkdir \"" . $rel . "/result/" . $prjname . "/audio\"");
+	shell_exec("mkdir \"" . $rel . "/result/" . $prjname . "/photo\"");
+
 	$outdir = $rel . "/result/" . $prjname . "/video";
-	vsplit($video, $vdur, $outdir);
-/*	foreach ($audios as $audio) {
-		shell_exec("cp ./audio/" . $audio . " ./result/" . $prjname . "/audio/" . $audio);
+
+	foreach ($audios as $audio) {
+		shell_exec("cp \"./audio/" . $audio . "\" \"./result/" . $prjname . "/audio/" . $audio . "\"");
 	}
 	foreach ($photos as $photo) {
-		shell_exec("cp ./photo/" . $audio . " ./result/" . $prjname . "/photo/" . $photo);
-	}*/
+		shell_exec("cp \"./photo/" . $photo . "\" \"./result/" . $prjname . "/photo/" . $photo . "\"");
+	}
+	vsplit($video, $vdur, $outdir);
+
 	return $prjname;
+}
+
+function deleteProject($prjname) {
+	$rel = $_SERVER["CONTEXT_DOCUMENT_ROOT"];
+	shell_exec("rm -rf \"" . $rel . "/result/" . $prjname . "\"");
 }
 
 function vsplit($video, $vdur, $outdir) {
@@ -108,7 +136,7 @@ function vsplit($video, $vdur, $outdir) {
 	$filename = substr($video, 0, strrpos($video, "."));
 	$ext = substr($video, strrpos($video, ".") + 1);
 	$out_name = $filename . "-%05d." . $ext;
-	shell_exec("sudo sh \"" . $rel . "/bin/ffsplit.sh\" \"" . $rel . "/video/" . $video . "\" " . $vdur . " \"" . $outdir . "/" . $out_name . "\"");
+	shell_exec("\"" . $rel . "/bin/ffsplit.sh\" \"" . $rel . "/video/" . $video . "\" " . $vdur . " \"" . $outdir . "/" . $out_name . "\"");
 }
 
 ?>

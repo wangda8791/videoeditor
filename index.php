@@ -24,7 +24,7 @@
             <td><input name="video" type="radio" value="{{ video.name }}"/></td>
             <td><a target="__new" href="{{ video.url }}"/>{{ video.name }}</a></td>
 	        <td>{{ video.size }}</td>
-	        <td><button class="btn btn-default">Delete</button></td>
+	        <td><a href="controller.php?cmd=deleteresource&type=video&name={{ video.name }}" class="btn btn-default">Delete</a></td>
           </tr>
         </tbody>
       </table>
@@ -43,7 +43,7 @@
             <td><input name="audio[]" type="checkbox" value="{{ audio.name }}"/></td>
             <td><a target="__new" href="{{ audio.url }}"/>{{ audio.name }}</a></td>
             <td>{{ audio.size }}</td>
-            <td><button class="btn btn-default">Delete</button></td>
+            <td><a href="controller.php?cmd=deleteresource&type=audio&name={{ audio.name }}" class="btn btn-default">Delete</a></td>
           </tr>
         </tbody>
       </table>
@@ -59,10 +59,10 @@
         </thead>
         <tbody>
           <tr ng-repeat="photo in resource.photos">
-          	<td><input name="photo[]" type="checkbox" value="{{ photo.name }}"/></td>
-          	<td><a target="__new" href="{{ photo.url }}"/>{{ photo.name }}</a></td>
-          	<td>{{ photo.size }}</td>
-          	<td><button class="btn btn-default">Delete</button></td>
+            <td><input name="photo[]" type="checkbox" value="{{ photo.name }}"/></td>
+            <td><a target="__new" href="{{ photo.url }}"/>{{ photo.name }}</a></td>
+            <td>{{ photo.size }}</td>
+            <td><a href="controller.php?cmd=deleteresource&type=photo&name={{ photo.name }}" class="btn btn-default">Delete</a></td>
           </tr>
         </tbody>
       </table>
@@ -75,14 +75,14 @@
       <table class="table table-striped">
         <thead>
           <th>Name</th>
-          <th>Number of Files</th>
+          <th>Video/Audio/Photo</th>
           <th></th>
         </thead>
         <tbody>
           <tr ng-repeat="project in projects">
-          	<td><a href="./project.php?name={{ project.name }}"/>{{ project.name }}</a></td>
-          	<td>{{ project.nof }}</td>
-          	<td><button class="btn btn-default">Delete</button></td>
+            <td><a href="./project.php?name={{ project.name }}"/>{{ project.name }}</a></td>
+            <td>{{ project.vfiles }}/{{ project.afiles }}/{{ project.pfiles }}</td>
+            <td><a href="controller.php?cmd=deleteprj&name={{ project.name }}" class="btn btn-default">Delete</a></td>
           </tr>
         </tbody>
       </table>
