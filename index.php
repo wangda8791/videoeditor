@@ -15,9 +15,9 @@
   <div class="pull-left col-md-6">
     <div class="container col-md-12">
       <h3>
-		Videos
-		<a class="btn btn-primary btn-lg pull-right" data-toggle="modal" data-target="#uploadDlg">Upload Files...</a>
-	  </h3>
+	Videos
+	<a class="btn btn-primary btn-lg pull-right" data-toggle="modal" data-target="#uploadDlg">Upload Files...</a>
+      </h3>
       <table class="table table-striped">
         <thead>
           <th></th>
@@ -26,7 +26,7 @@
           <th></th>
         </thead>
         <tbody>
-          <tr ng-repeat="video in resource.videos">
+          <tr ng-repeat="video in resource.videos | orderBy: 'ctime': true">
             <td><input name="video" type="radio" value="{{ video.name }}"/></td>
             <td><a target="__new" href="{{ video.url }}"/>{{ video.name }}</a></td>
 	        <td>{{ video.size }}</td>
@@ -45,7 +45,7 @@
           <th></th>
         </thead>
         <tbody>
-          <tr ng-repeat="audio in resource.audios">
+          <tr ng-repeat="audio in resource.audios | orderBy: 'ctime': true">
             <td><input name="audio[]" type="checkbox" value="{{ audio.name }}"/></td>
             <td><a target="__new" href="{{ audio.url }}"/>{{ audio.name }}</a></td>
             <td>{{ audio.size }}</td>
@@ -55,7 +55,7 @@
       </table>
     </div>
     <div class="container col-md-12">
-      <h3>image</h3>
+      <h3>Image</h3>
       <table class="table table-striped">
         <thead>
           <th></th>
@@ -64,7 +64,7 @@
           <th></th>
         </thead>
         <tbody>
-          <tr ng-repeat="image in resource.images">
+          <tr ng-repeat="image in resource.images | orderBy: 'ctime': true">
             <td><input name="image[]" type="checkbox" value="{{ image.name }}"/></td>
             <td><a target="__new" href="{{ image.url }}"/>{{ image.name }}</a></td>
             <td>{{ image.size }}</td>
@@ -81,11 +81,11 @@
       <table class="table table-striped">
         <thead>
           <th>Name</th>
-          <th>Video/Audio/image</th>
+          <th>Video/Audio/Image</th>
           <th></th>
         </thead>
         <tbody>
-          <tr ng-repeat="project in projects">
+          <tr ng-repeat="project in projects | orderBy: 'ctime': true">
             <td><a href="./project.php?name={{ project.name }}"/>{{ project.name }}</a></td>
             <td>{{ project.vfiles }}/{{ project.afiles }}/{{ project.pfiles }}</td>
             <td><a href="controller.php?cmd=deleteprj&name={{ project.name }}" class="btn btn-default">Delete</a></td>

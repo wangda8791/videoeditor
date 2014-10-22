@@ -34,11 +34,18 @@
 	}
 
 function upload($files) {
-	$tmp_names = $file['tmp_name'];
-	$types = $file['type'];
+	$names = $files['name'];
+	$tmp_names = $files['tmp_name'];
+	$types = $files['type'];
+	$sizes = $files['size'];
+
 	foreach ($tmp_names as $key => $tmp_name) {
-		$type = $types[$key];
-		if (@move_uploaded_file($tmp_name, "./" . $type)){
+		$type = substr($types[$key], 0, strrpos($types[$key], "/"));
+		$name = $names[$key];
+		$size = $sizes[$key];
+		if ($size == 0) continue;
+
+		if (@move_uploaded_file($tmp_name, "./" . $type . "/" . $name)){
 		}
 	}
 }
@@ -62,7 +69,8 @@ function resource_path($path) {
 		$files[] = array(
 			"url"=>$path . "/" . $file,
 			"name"=>$file, 
-			"size"=>intval(filesize($path . "/" . $file) / 1024)
+			"size"=>intval(filesize($path . "/" . $file) / 1024),
+			"ctime"=>filectime($path . "/" . $file)
 			);
 	}
 	closedir($dir);
@@ -80,23 +88,30 @@ function project() {
 		if ($file == "." || $file == ".." || filetype("./result/" . $file) == "file")
 			continue;
 
-		$vfile = opendir("./result/" . $file . "/video");
-		$afile = opendir("./result/" . $file . "/audio");
-<<<<<<< HEAD
-		$pfile = opendir("./result/" . $file . "/image");
-=======
-		$pfile = opendir("./result/" . $file . "/photo");
->>>>>>> 2a7487a72318d1bd7a70549dc61bfb17ed94c704
+		$vfile = countfile("./result/" . $file . "/video");
+		$afile = countfile("./result/" . $file . "/audio");
+		$pfile = countfile("./result/" . $file . "/image");
 		
 		$files[] = array(
 			"name"=>$file, 
-			"vfiles"=>count(readdir($vfile)) - 1, 
-			"afiles"=>count(readdir($afile)) - 1, 
-			"pfiles"=>count(readdir($pfile)) - 1
+			"vfiles"=>$vfile, 
+			"afiles"=>$afile, 
+			"pfiles"=>$pfile,
+			"ctime"=>filectime("./result/" . $file)
 			);
 	}
 	closedir($dir);
 	return $files;
+}
+
+function countfile($path) {
+	$dir = opendir($path);
+	$count = 0;
+	while ($file = readdir($dir)) {
+		if (is_dir($file)) continue;
+		$count++;
+	}
+	return $count;
 }
 
 function createProject() {
@@ -116,7 +131,7 @@ function createProject() {
 	shell_exec("mkdir \"" . $rel . "/result/" . $prjname . "\"");
 	shell_exec("mkdir \"" . $rel . "/result/" . $prjname . "/video\"");
 	shell_exec("mkdir \"" . $rel . "/result/" . $prjname . "/audio\"");
-	shell_exec("mkdir \"" . $rel . "/result/" . $prjname . "/photo\"");
+	shell_exec("mkdir \"" . $rel . "/result/" . $prjname . "/image\"");
 
 	$outdir = $rel . "/result/" . $prjname . "/video";
 
@@ -125,7 +140,7 @@ function createProject() {
 	}
 
 	foreach ($images as $image) {
-		shell_exec("cp ./image/" . $audio . " ./result/" . $prjname . "/image/" . $image);
+		shell_exec("cp \"./image/" . $image . "\" \"./result/" . $prjname . "/image/" . $image . "\"");
 	}
 	vsplit($video, $vdur, $outdir);
 
