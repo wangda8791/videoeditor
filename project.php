@@ -8,23 +8,24 @@
 
 <body>
 <center><h1>Workspace (<?php echo $_REQUEST["name"]; ?>)</h1></center>
+<center><h2><div id="result_panel"></div></h2></center>
 <div ng-app="" ng-controller="controller">
 <div class="row container col-md-9">
   <div class="container col-md-12">
     <h3>Video Clip</h3>
-      <div ng-repeat="video in resource.videos" class="col-md-2">
+      <div ng-repeat="video in resource.videos | orderBy: 'name'" class="col-md-2">
         <button class="btn btn-success col-md-12" ng-click="select('video', video.name);">{{ video.name }}</button>
       </div>
   </div>
   <div class="container col-md-12">
     <h3>Audio</h3>
-      <div ng-repeat="audio in resource.audios" class="col-md-2">
+      <div ng-repeat="audio in resource.audios | orderBy: 'name'" class="col-md-2">
         <button class="btn btn-info col-md-12" ng-click="select('audio', audio.name);">{{ audio.name }}</button>
       </div>
   </div>
   <div class="container col-md-12">
     <h3>Image</h3>
-      <div ng-repeat="image in resource.images" class="col-md-2">
+      <div ng-repeat="image in resource.images | orderBy: 'name'" class="col-md-2">
         <button class="btn btn-warning col-md-12" ng-click="select('image', image.name);">{{ image.name }}</button>
       </div>
   </div>
@@ -34,12 +35,12 @@
     <h3>
       Resource
       <button class="btn btn-danger pull-right" ng-click="generate();">Generate</button>
+      <button class="btn btn-warning pull-right" style="margin-right:10px" ng-click="save();">Save</button>
     </h3>
     <div id="resource_panel"></div>
   </div>
 </div>
 </div>
-
 <script>
 
 function controller($scope,$http) {
@@ -73,12 +74,22 @@ function controller($scope,$http) {
   $scope.generate = function() {
     var res = $http.post('./controller.php?cmd=generate&prjname=<?php echo $_REQUEST['name']; ?>', $scope.workspace);
     res.success(function(data, status, headers, config) {
-			alert(data);
-      		  $scope.message = data;
+      		  alert("Video generation is succeeded");
+		  document.getElementById("result_panel").innerHTML = data;
 		});
 		res.error(function(data, status, headers, config) {
-		  alert( "failure message: " + JSON.stringify({data: data}));
+		  alert("Video generation is failed.");
 		});
+  }
+
+  $scope.save = function() {
+    var res = $http.post('./controller.php?cmd=save&prjname=<?php echo $_REQUEST['name']; ?>', $scope.workspace);
+    res.success(function(data, status, headers, config) {
+                  alert("Project is successfully saved.");
+                });
+                res.error(function(data, status, headers, config) {
+		  alert("Project saving is failed.");
+                });
   }
 
   $scope.fillresourcepanel = function(profile) {
@@ -103,6 +114,9 @@ function controller($scope,$http) {
 function loadproject($scope, $http) {
   $http.get("./controller.php?cmd=loadproject&name=<?php echo $_REQUEST['name']; ?>")
   .success(function(response) { $scope.workspace = response; $scope.fillresourcepanel(response.profile);});
+
+  $http.get("./controller.php?cmd=result&prjname=<?php echo $_REQUEST['name']; ?>")
+  .success(function(response) { document.getElementById("result_panel").innerHTML = response; });
 }
 
 </script>

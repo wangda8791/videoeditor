@@ -27,7 +27,7 @@
         </thead>
         <tbody>
           <tr ng-repeat="video in resource.videos | orderBy: 'ctime': true">
-            <td><input name="video" type="radio" value="{{ video.name }}"/></td>
+            <td><input name="video[]" type="checkbox" value="{{ video.name }}"/></td>
             <td><a target="__new" href="{{ video.url }}"/>{{ video.name }}</a></td>
 	    <td>{{ video.size }}</td>
 	    <td><a href="controller.php?cmd=deleteresource&type=video&name={{ video.name }}" class="btn btn-default">Delete</a></td>
@@ -81,12 +81,14 @@
       <table class="table table-striped">
         <thead>
           <th>Name</th>
+	  <th>Generated</th>
           <th>Video/Audio/Image</th>
           <th></th>
         </thead>
         <tbody>
           <tr ng-repeat="project in projects | orderBy: 'ctime': true">
             <td><a href="./project.php?name={{ project.name }}"/>{{ project.name }}</a></td>
+    	    <td><a href="./result/{{ project.name }}.mp4" target="__new" ng-if="project.result == 1">{{ project.name }}.mp4</a></td>
             <td>{{ project.vfiles }}/{{ project.afiles }}/{{ project.pfiles }}</td>
             <td><a href="controller.php?cmd=deleteprj&name={{ project.name }}" class="btn btn-default">Delete</a></td>
           </tr>

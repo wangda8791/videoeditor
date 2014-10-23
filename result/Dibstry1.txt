@@ -1,0 +1,5 @@
+file ./Dibstry1/video/16bit-00001.mov
+file ./Dibstry1/video/VID_20141002_192517-00003.mp4
+file ./Dibstry1/video/VID_20141002_192517-00005.mp4
+file ./Dibstry1/audio/Death-Grips---Get-Got.mp3
+file .././tmp/1414053266.mp4
