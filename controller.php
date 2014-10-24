@@ -118,10 +118,11 @@ function generate($prjname, $gendata) {
 	}
 
 	//file_put_contents("./result/" . $prjname . ".txt", $inputs);
-    	$command = "ls " . $inputs . " | perl -ne 'print \"file " . '$' . "_\"' | ./bin/ffmpeg -y -f concat -i - -vcodec h264 -pix_fmt yuv420p -s 640*480 -acodec aac -strict experimental ./result/" . $prjname . ".mp4";
+    	$command = "./bin/ffmerge.sh " . $inputs;
 //echo $command . "<br/>";
 //exit;
 	shell_exec($command);
+	shell_exec("mv ./result.mp4 " . "./result/" . $prjname . ".mp4");
 	echo "<a href=\"./result/" . $prjname . ".mp4" . "\" target=\"__new\">" . $prjname . ".mp4</a>";
 }
 
