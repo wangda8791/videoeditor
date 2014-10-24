@@ -1,8 +1,0 @@
-file ./WangTest/video/VID_20141002_192517-00001.mp4
-file ./WangTest/video/VID_20141002_192517-00002.mp4
-file .././tmp/ockstar12www.songs.pk1414102061.mp4
-file ./WangTest/video/VID_20141002_192517-00006.mp4
-file ./WangTest/video/VID_20141002_192517-00007.mp4
-file .././tmp/ockstar12www.songs.pk1414102069.mp4
-file ./WangTest/video/VID_20141002_192517-00008.mp4
-file ./WangTest/video/VID_20141002_192517-00009.mp4

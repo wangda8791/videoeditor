@@ -1,4 +1,0 @@
-apt-get install build-essential curl tar
-./build.sh or build-ubuntu.sh
-$ mkdir ~/.ffmpeg
-$ cp ./target/share/ffmpeg/*.ffpreset ~/.ffmpeg
