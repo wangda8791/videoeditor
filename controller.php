@@ -70,67 +70,32 @@ function generate($prjname, $gendata) {
 	foreach ($gendata->profile as $file) {
 
 		$file_url = "./result/" . $prjname . "/" . $file->type . "/" . $file->name;
+		
 		if ($file->type == "audio") {
-			if ($image_video_file_type == "audio") {
-				continue;
-			}
-
-			if ($image_video_flag == true) {
-				$result_file = mergemp4($image_video_file, $file_url, getfilename($file->name) . time() . ".mp4");
-				$flag = false;
-			} else {
-				$image_video_file = $file_url;
-				$image_video_file_type = "audio";
-				$image_video_flag = true;
-				continue;
-			}
+			$filename = getfilename($file->name) . time() . ".mp4";
+			shell_exec("./bin/ffgen.sh " . $file_url . " " . $filename);
+			$file_url = mergemp4("./tmp/" . $filename, $file_url, getfilename($file->name) . time() . ".mp4");
 		}
 
 		if ($file->type == "image") {
-			$tmp = generatemp4("./result/" . $prjname . "/" . $file->type . "/" . $file->name, getfilename($file->name) . time() . ".mp4");
-
-			if ($image_video_flag == false) {
-				$image_video_file = $tmp;
-				$image_video_file_type = "image";
-				$image_video_flag = true;
-				continue;
-			} else if ($image_video_file_type == "image"){
-				$image_video_file = joinmp4($image_video_file, $tmp, getfilename($image_video_file) . getfilename($tmp) . time() . ".mp4");
-				continue;
-			} else if ($image_video_file_type == "audio"){
-				$result_file = mergemp4($tmp, $image_video_file, getfilename($tmp) . getfilename($image_video_file) . time() . ".mp4");
-				$image_video_flag = false;
-			}
+			$file_url = generatemp4($file_url, getfilename($file->name) . time() . ".mp4");
 		}
 
-		if ($file->type == "video") {
-			if ($image_video_flag == true && $image_video_file_type == "image") {
-				$inputs .= $result_file . " ";
-				$image_video_flag = false;
-			}
-			$inputs .= "./result/" . $prjname . "/" . $file->type . "/" . $file->name . " ";
-		}
+		$inputs .= $file_url . " ";
+
 	}
 
-	if ($image_video_flag == true && $image_video_file_type == "image") {
-		$inputs .= $result_file . " ";
-		$image_video_flag = false;
-	}
-
-	//file_put_contents("./result/" . $prjname . ".txt", $inputs);
     	$command = "./bin/ffmerge.sh " . $inputs;
-//echo $command . "<br/>";
-//exit;
 	shell_exec($command);
 	shell_exec("mv ./result.mp4 " . "./result/" . $prjname . ".mp4");
+	shell_exec("rm -rf ./tmp/*");
 	echo "<a href=\"./result/" . $prjname . ".mp4" . "\" target=\"__new\">" . $prjname . ".mp4</a>";
 }
 
 function mergemp4($video, $audio, $filename) {
 	$target = "./tmp/" . $filename;
 
-	$command = "./bin/ffmpeg -y -i " . $video . " -i " . $audio . " -c:v copy -c:a aac -strict experimental -map 0:v:0 -map 1:a:0 -shortest " . $target;
-//	echo $command . "<br/>";
+	$command = "./bin/ffmpeg -y -i " . $video . " -i " . $audio . " -c:v copy -c:a aac -strict experimental -map 0:v:0 -map 1:a:0 " . $target;
 	shell_exec($command);
 	return $target;
 }
@@ -139,8 +104,6 @@ function joinmp4($video1, $video2, $filename) {
 	$target = "./tmp/" . $filename;
 
 	$command = "ls " . $video1 . " " . $video2 . " | perl -ne 'print \"file " . '$' . "_\"' | ./bin/ffmpeg -f concat -i - -c copy " . $target;
-    	//$command .= './bin/ffmpeg -y -i "concat:' . $video1 . '|' . $video2 .'" -c copy ' . $target;
-//	echo $command . "<br/>";
 	shell_exec($command);
 	return $target;
 }
@@ -148,7 +111,6 @@ function joinmp4($video1, $video2, $filename) {
 function generatemp4($image, $filename) {
 	$target = "./tmp/" . $filename;
 	$command = "./bin/ffmpeg -y -loop 1 -f image2 -i \"" . $image . "\" -vcodec h264 -s 640*480 -pix_fmt yuv420p -r 30 -t 2 " . $target;
-//	echo $command . "<br/>";
 	shell_exec($command);
 	return $target;
 }
@@ -250,6 +212,7 @@ function createProject() {
 	$prjname = $_REQUEST["name"];
 	$prjname = str_replace(' ', '', $prjname);
 	$vdur = $_REQUEST["vdur"];
+	$adur = $_REQUEST["adur"];
 	$videos = $_REQUEST["video"];
 	$audios = $_REQUEST["audio"];
 	$images = $_REQUEST["image"];
@@ -267,9 +230,10 @@ function createProject() {
 	shell_exec("mkdir \"" . $rel . "/result/" . $prjname . "/image\"");
 
 	$outdir = $rel . "/result/" . $prjname . "/video";
+	$outdir_a = $rel . "/result/" . $prjname . "/audio";
 
 	foreach ($audios as $audio) {
-		shell_exec("cp \"./audio/" . $audio . "\" \"./result/" . $prjname . "/audio/" . $audio . "\"");
+		asplit($audio, $adur, $outdir_a);
 	}
 
 	foreach ($images as $image) {
@@ -294,6 +258,14 @@ function vsplit($video, $vdur, $outdir) {
 	$ext = substr($video, strrpos($video, ".") + 1);
 	$out_name = $filename . "-%05d." . $ext;
 	shell_exec("\"./bin/ffsplit.sh\" \"" . $rel . "/video/" . $video . "\" " . $vdur . " \"" . $outdir . "/" . $out_name . "\"");
+}
+
+function asplit($audio, $adur, $outdir) {
+        $rel = $_SERVER["CONTEXT_DOCUMENT_ROOT"];
+        $filename = substr($audio, 0, strrpos($audio, "."));
+        $ext = substr($audio, strrpos($audio, ".") + 1);
+        $out_name = $filename . "-%05d." . $ext;
+        shell_exec("\"./bin/ffsplit_a.sh\" \"" . $rel . "/audio/" . $audio . "\" " . $adur . " \"" . $outdir . "/" . $out_name . "\"");
 }
 
 ?>

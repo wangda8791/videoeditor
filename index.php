@@ -105,12 +105,18 @@
 		  </div>
 	    </div>
 		<div class="control-group">
-		  <label class="control-label" for="vdur">Clip Duration(sec)</label>
+		  <label class="control-label" for="vdur">Video Clip Duration(sec)</label>
 		  <div class="controls">
 		    <input type="text" name="vdur" placeholder="Duration(sec)"/>
-			<button type="submit" class="btn">Create</button>
 		  </div>
 	    </div>
+<div class="control-group">
+                  <label class="control-label" for="adur">Audio Clip Duration(sec)</label>
+                  <div class="controls">
+                    <input type="text" name="adur" placeholder="Duration(sec)"/>
+                        <button type="submit" class="btn">Create</button>
+                  </div>
+            </div>
 	  </fieldset>
     </div>
   </div>
