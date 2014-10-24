@@ -1,4 +1,0 @@
-file ./ImageAndAudio/audio/Death-Grips---Get-Got.mp3
-file .././tmp/1414052379.mp4
-file .././tmp/1414052379.mp4
-file .././tmp/1414052380.mp4

@@ -1,9 +1,0 @@
-file ./VideoAndAudio/video/AV36_1-00001.AVI
-file ./VideoAndAudio/video/AV36_1-00002.AVI
-file ./VideoAndAudio/video/AV36_1-00003.AVI
-file ./VideoAndAudio/audio/Death-Grips---Get-Got.mp3
-file ./VideoAndAudio/video/AV36_1-00004.AVI
-file ./VideoAndAudio/video/AV36_1-00005.AVI
-file ./VideoAndAudio/video/AV36_1-00006.AVI
-file ./VideoAndAudio/video/AV36_1-00007.AVI
-file ./VideoAndAudio/video/AV36_1-00008.AVI

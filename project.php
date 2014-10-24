@@ -41,6 +41,11 @@
   </div>
 </div>
 </div>
+
+<div class="modal fade" id="progressing" tabindex="-1" role="dialog" aria-hidden="true" style="background-color:gray;opacity:0.5;">
+	<div style="margin-left:40%; margin-top:20%; color:yello; font-size: 40px;">Generating Video...</div>
+</div>
+
 <script>
 
 function controller($scope,$http) {
@@ -72,10 +77,12 @@ function controller($scope,$http) {
   }
 
   $scope.generate = function() {
+    document.getElementById("progressing").style.display="block";
     var res = $http.post('./controller.php?cmd=generate&prjname=<?php echo $_REQUEST['name']; ?>', $scope.workspace);
     res.success(function(data, status, headers, config) {
       		  alert("Video generation is succeeded");
 		  document.getElementById("result_panel").innerHTML = data;
+		  document.getElementById("progressing").style.display="none";
 		});
 		res.error(function(data, status, headers, config) {
 		  alert("Video generation is failed.");

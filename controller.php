@@ -40,7 +40,7 @@
 			$prjname = $_REQUEST["name"];
 			echo json_encode(resources("./result/" . $prjname));
 			break;
-                case "generate":
+        case "generate":
 			$prjname = $_REQUEST["prjname"];
 			$request_body = file_get_contents('php://input');
 			file_put_contents("./result/" . $prjname . "/prj.save", $request_body);
@@ -48,9 +48,9 @@
 			generate($prjname, $data);
 			break;
 		case "save":
-                        $prjname = $_REQUEST["prjname"];
-                        $request_body = file_get_contents('php://input');
-                        file_put_contents("./result/" . $prjname . "/prj.save", $request_body);
+			$prjname = $_REQUEST["prjname"];
+			$request_body = file_get_contents('php://input');
+			file_put_contents("./result/" . $prjname . "/prj.save", $request_body);
 			break;
 		case "result":
 			$prjname = $_REQUEST["prjname"];
@@ -63,12 +63,12 @@
 	}
 
 function generate($prjname, $gendata) {
-        $command = "./bin/ffmpeg -y";
 	$inputs = "";
 	$image_video_flag = false;
 	$image_video_file = "";
 	$image_video_file_type = "";
 	foreach ($gendata->profile as $file) {
+
 		$file_url = "./result/" . $prjname . "/" . $file->type . "/" . $file->name;
 		if ($file->type == "audio") {
 			if ($image_video_file_type == "audio") {
@@ -76,57 +76,86 @@ function generate($prjname, $gendata) {
 			}
 
 			if ($image_video_flag == true) {
-				$vtmp = generatemp4($image_video_file, $file_url);
+				$result_file = mergemp4($image_video_file, $file_url, getfilename($file->name) . time() . ".mp4");
 				$flag = false;
 			} else {
 				$image_video_file = $file_url;
+				$image_video_file_type = "audio";
 				$image_video_flag = true;
+				continue;
 			}
 		}
 
 		if ($file->type == "image") {
-				$inputs .= "file dd../" . $vtmp . "\n";
+			$tmp = generatemp4("./result/" . $prjname . "/" . $file->type . "/" . $file->name, getfilename($file->name) . time() . ".mp4");
+
 			if ($image_video_flag == false) {
-				$image_video_file = generatemp4("./result/" . $prjname . "/" . $file->type . "/" . $file->name);
+				$image_video_file = $tmp;
+				$image_video_file_type = "image";
 				$image_video_flag = true;
+				continue;
 			} else if ($image_video_file_type == "image"){
-				$tmp = generatemp4("./result" . $prjname . "/" . $file->type . "/" . $file->name);
-				$image_video_file = mergemp4($image_video_file, $tmp);
+				$image_video_file = joinmp4($image_video_file, $tmp, getfilename($image_video_file) . getfilename($tmp) . time() . ".mp4");
+				continue;
 			} else if ($image_video_file_type == "audio"){
-				$result_file = joinmp4($image_video_file, $
+				$result_file = mergemp4($tmp, $image_video_file, getfilename($tmp) . getfilename($image_video_file) . time() . ".mp4");
+				$image_video_flag = false;
 			}
-                } else {
-	                $inputs .= "file ./" . $prjname . "/" . $file->type . "/" . $file->name . "\n";
 		}
-        }
-	file_put_contents("./result/" . $prjname . ".txt", $inputs);
-        $command .= " -f concat -i \"./result/" . $prjname . ".txt\" -vcodec h264 -pix_fmt yuv420p -s 640*480 -acodec aac -strict experimental \"./result/" . $prjname . ".mp4\"";
+
+		if ($file->type == "video") {
+			if ($image_video_flag == true && $image_video_file_type == "image") {
+				$inputs .= $result_file . " ";
+				$image_video_flag = false;
+			}
+			$inputs .= "./result/" . $prjname . "/" . $file->type . "/" . $file->name . " ";
+		}
+	}
+
+	if ($image_video_flag == true && $image_video_file_type == "image") {
+		$inputs .= $result_file . " ";
+		$image_video_flag = false;
+	}
+
+	//file_put_contents("./result/" . $prjname . ".txt", $inputs);
+    	$command = "ls " . $inputs . " | perl -ne 'print \"file " . '$' . "_\"' | ./bin/ffmpeg -y -f concat -i - -vcodec h264 -pix_fmt yuv420p -s 640*480 -acodec aac -strict experimental ./result/" . $prjname . ".mp4";
+//echo $command . "<br/>";
+//exit;
 	shell_exec($command);
 	echo "<a href=\"./result/" . $prjname . ".mp4" . "\" target=\"__new\">" . $prjname . ".mp4</a>";
 }
 
-function audio_perform($file, $file_url) {
-        if ($file->type == "audio") {
-          if ($image_video_file_type == "audio") {
-            continue;
-  }
+function mergemp4($video, $audio, $filename) {
+	$target = "./tmp/" . $filename;
 
-                        if ($image_video_flag == true) {
-                                $vtmp = generatemp4($image_video_file, $file_url);
-                                $flag = false;
-                        } else {
-                                $image_video_file = $file_url;
-                                $image_video_flag = true;
-                        }
-                }
-
-}
-
-function generatemp4($image) {
-	$target = "./tmp/" . time() . ".mp4";
-	$command = "./bin/ffmpeg -y -loop 1 -f image2 -i \"" . $image . "\" -pix_fmt yuv420p -r 30 -t 2 " . $target;
+	$command = "./bin/ffmpeg -y -i " . $video . " -i " . $audio . " -c:v copy -c:a aac -strict experimental -map 0:v:0 -map 1:a:0 -shortest " . $target;
+//	echo $command . "<br/>";
 	shell_exec($command);
 	return $target;
+}
+
+function joinmp4($video1, $video2, $filename) {
+	$target = "./tmp/" . $filename;
+
+	$command = "ls " . $video1 . " " . $video2 . " | perl -ne 'print \"file " . '$' . "_\"' | ./bin/ffmpeg -f concat -i - -c copy " . $target;
+    	//$command .= './bin/ffmpeg -y -i "concat:' . $video1 . '|' . $video2 .'" -c copy ' . $target;
+//	echo $command . "<br/>";
+	shell_exec($command);
+	return $target;
+}
+
+function generatemp4($image, $filename) {
+	$target = "./tmp/" . $filename;
+	$command = "./bin/ffmpeg -y -loop 1 -f image2 -i \"" . $image . "\" -vcodec h264 -s 640*480 -pix_fmt yuv420p -r 30 -t 2 " . $target;
+//	echo $command . "<br/>";
+	shell_exec($command);
+	return $target;
+}
+
+function getfilename($filename) {
+	$pos = strrpos($filename, "/");
+	$len = strrpos($filename, ".") - $pos - 1;
+	return substr($filename, $pos + 1, $len);
 }
 
 function upload($files) {
@@ -138,7 +167,7 @@ function upload($files) {
 	foreach ($tmp_names as $key => $tmp_name) {
 		$type = substr($types[$key], 0, strrpos($types[$key], "/"));
 		$name = $names[$key];
-		$name = str_replace(' ', '-', $name);
+		$name = str_replace(')', '', str_replace('(', '', str_replace(' ', '', $name)));
 		$size = $sizes[$key];
 		if ($size == 0) continue;
 
@@ -218,6 +247,7 @@ function countfile($path) {
 
 function createProject() {
 	$prjname = $_REQUEST["name"];
+	$prjname = str_replace(' ', '', $prjname);
 	$vdur = $_REQUEST["vdur"];
 	$videos = $_REQUEST["video"];
 	$audios = $_REQUEST["audio"];
@@ -266,3 +296,4 @@ function vsplit($video, $vdur, $outdir) {
 }
 
 ?>
+
